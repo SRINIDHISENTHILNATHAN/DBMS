@@ -211,6 +211,8 @@ GROUP BY medication;
 **Output:**
 
 ![image](https://github.com/user-attachments/assets/eaaa5887-826d-4d79-b72d-261f897de349)
+
+
 **grade:**
 ![image](https://github.com/user-attachments/assets/f48b9c1e-0da3-4eec-b344-7cf327d9977a)
 
