@@ -1,5 +1,3 @@
-![image](https://github.com/user-attachments/assets/1fc4652a-660f-43ba-82ff-0b08998e342e)# Experiment 4: Aggregate Functions, Group By and Having Clause
-
 ## AIM
 To study and implement aggregate functions, GROUP BY, and HAVING clause with suitable examples.
 
@@ -96,6 +94,7 @@ WHERE city='California';
 Write a SQL query to calculate the total number of working hours of all employees
 
 Sample table: employee1
+
 ![image](https://github.com/user-attachments/assets/8b9bc3b7-7609-47f7-b734-48ff166000d4)
 
 
