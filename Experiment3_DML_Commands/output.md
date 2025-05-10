@@ -244,3 +244,5 @@ WHERE Department IS NULL;
 
 ![image](https://github.com/user-attachments/assets/08de48e0-d220-4459-a99c-fbe034a69526)
 
+**GRADE**
+![image](https://github.com/user-attachments/assets/2900c267-cef9-4e95-a77a-4005046d86c7)
