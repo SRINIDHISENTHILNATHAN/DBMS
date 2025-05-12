@@ -409,3 +409,8 @@ WHERE
 
 ![image](https://github.com/user-attachments/assets/e9484682-b7a3-4b06-aad3-765ecf3646cc)
 
+
+## grade:
+![image](https://github.com/user-attachments/assets/64d2fec3-e0d2-49e6-ab03-153b029f5156)
+
+
