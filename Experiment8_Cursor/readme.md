@@ -234,6 +234,56 @@ END;
 **Output:**  
 The program should display employee names with their department numbers or the appropriate error message if no data is found.
 
+**Program:**
+
+```
+
+BEGIN
+    EXECUTE IMMEDIATE 'ALTER TABLE employees ADD (dept_no NUMBER)';
+EXCEPTION
+    WHEN OTHERS THEN
+        IF SQLCODE = -01430 THEN
+            NULL;
+        ELSE
+            RAISE;
+        END IF;
+END;
+/
+BEGIN
+    UPDATE employees SET dept_no = 10 WHERE emp_id = 1;
+    UPDATE employees SET dept_no = 20 WHERE emp_id = 2;
+    UPDATE employees SET dept_no = 30 WHERE emp_id = 3;
+    UPDATE employees SET dept_no = 40 WHERE emp_id = 4;
+    COMMIT;
+END;
+/
+DECLARE
+    no_employees_found EXCEPTION;
+
+    row_count NUMBER := 0;
+BEGIN
+    FOR emp_rec IN (
+        SELECT emp_name, dept_no FROM employees
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE('Name: ' || emp_rec.emp_name || ', Dept No: ' || emp_rec.dept_no);
+        row_count := row_count + 1;
+    END LOOP;
+
+    IF row_count = 0 THEN
+        RAISE no_employees_found;
+    END IF;
+EXCEPTION
+    WHEN no_employees_found THEN
+        DBMS_OUTPUT.PUT_LINE('No employees found in the database.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Unexpected error occurred: ' || SQLERRM);
+END;
+
+```
+**Output:**
+
+![image](https://github.com/user-attachments/assets/af026a81-9c34-480e-b146-efe96bc1f78b)
+
 ---
 
 ### **Question 4: Cursor with `%ROWTYPE` and Exception Handling**
