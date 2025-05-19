@@ -33,6 +33,55 @@ END;
 **Expected Output:**
 - A new entry is added to the `employee_log` table each time a new record is inserted into the `employees` table.
 
+**Program:**
+```sql
+CREATE TABLE employees (
+    emp_id     NUMBER PRIMARY KEY,
+    emp_name   VARCHAR2(100),
+    designation VARCHAR2(100),
+    salary     NUMBER,
+    dept_no    NUMBER
+);
+CREATE TABLE employee_log (
+    log_id       NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    emp_id       NUMBER,
+    emp_name     VARCHAR2(100),
+    designation  VARCHAR2(100),
+    salary       NUMBER,
+    dept_no      NUMBER,
+    log_date     DATE
+);
+CREATE OR REPLACE TRIGGER trg_log_employee_insert
+AFTER INSERT ON employees
+FOR EACH ROW
+BEGIN
+    INSERT INTO employee_log (
+        emp_id, emp_name, designation, salary, dept_no, log_date
+    ) VALUES (
+        :NEW.emp_id, :NEW.emp_name, :NEW.designation,
+        :NEW.salary, :NEW.dept_no, SYSDATE
+    );
+END;
+/
+INSERT INTO employees (emp_id, emp_name, designation, salary, dept_no)
+VALUES (3, 'Carol', 'Analyst', 50000, 30);
+
+INSERT INTO employees (emp_id, emp_name, designation, salary, dept_no)
+VALUES (4, 'David', 'Tester', 40000, 20);
+
+COMMIT;
+SELECT emp_id, emp_name FROM employees;
+
+DELETE FROM employees WHERE emp_id IN (1, 2);
+COMMIT;
+
+INSERT INTO employees (emp_id, emp_name, designation, salary, dept_no)
+VALUES (1, 'Alice', 'Manager', 85000, 10);
+```
+**Output:**
+
+![image](https://github.com/user-attachments/assets/1b03dbc5-b112-4638-98a6-9307745e54aa)
+
 ---
 
 ## 2. Write a trigger to prevent deletion of records from a sensitive table.
@@ -42,6 +91,31 @@ END;
 
 **Expected Output:**
 - If an attempt is made to delete a record from `sensitive_data`, an error message is raised, e.g., `ERROR: Deletion not allowed on this table.`
+**Program:**
+```sql
+CREATE TABLE sensitive_data (
+    record_id   NUMBER PRIMARY KEY,
+    info        VARCHAR2(100)
+);
+
+-- Insert sample data
+INSERT INTO sensitive_data (record_id, info) VALUES (1, 'Top Secret Document A');
+INSERT INTO sensitive_data (record_id, info) VALUES (2, 'Confidential File B');
+COMMIT;
+
+-- Create a trigger to prevent deletion
+CREATE OR REPLACE TRIGGER prevent_sensitive_data_deletion
+BEFORE DELETE ON sensitive_data
+FOR EACH ROW
+BEGIN
+    RAISE_APPLICATION_ERROR(-20001, 'ERROR: Deletion not allowed on this table.');
+END;
+/
+```
+
+**Output:**
+
+  ![image](https://github.com/user-attachments/assets/4db817a0-4611-42bb-b92f-3ad301df59db)
 
 ---
 
@@ -52,6 +126,30 @@ END;
 
 **Expected Output:**
 - The `last_modified` column in the `products` table is updated automatically to the current date and time when any record is updated.
+**Program:**
+
+```sql
+CREATE TABLE products (
+    product_id     NUMBER PRIMARY KEY,
+    product_name   VARCHAR2(100),
+    price          NUMBER,
+    last_modified  DATE
+);
+
+INSERT INTO products (product_id, product_name, price) VALUES (1, 'Laptop', 75000);
+INSERT INTO products (product_id, product_name, price) VALUES (2, 'Mobile Phone', 30000);
+COMMIT;
+CREATE OR REPLACE TRIGGER trg_update_last_modified
+BEFORE UPDATE ON products
+FOR EACH ROW
+BEGIN
+    :NEW.last_modified := SYSDATE;
+END;
+/
+
+```
+**Output:**
+  ![image](https://github.com/user-attachments/assets/14d4efc6-b018-49ae-b0ff-f6b0fd27ff4d)
 
 ---
 
