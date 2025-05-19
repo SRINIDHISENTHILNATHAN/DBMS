@@ -79,7 +79,7 @@ END;
 **Output:**  
 The program should display the employee details or an error message.
 **Program:**
-```
+```sql
 CREATE  TABLE employees (
     emp_id      NUMBER PRIMARY KEY,
     emp_name    VARCHAR2(100),
@@ -149,7 +149,7 @@ END;
 **Output:**  
 The program should display the employee details within the specified salary range or an error message if no data is found.
 **Program:**
-```
+```sql
 BEGIN
     EXECUTE IMMEDIATE 'ALTER TABLE employees ADD (salary NUMBER)';
 EXCEPTION
@@ -236,7 +236,7 @@ The program should display employee names with their department numbers or the a
 
 **Program:**
 
-```
+```sql
 
 BEGIN
     EXECUTE IMMEDIATE 'ALTER TABLE employees ADD (dept_no NUMBER)';
@@ -303,7 +303,7 @@ END;
 **Output:**  
 The program should display employee records or the appropriate error message if no data is found.
 **Program:**
-```
+```sql
 DECLARE
     CURSOR emp_cursor IS
         SELECT * FROM employees;
@@ -363,6 +363,51 @@ END;
 
 **Output:**  
 The program should update employee salaries and display a message, or it should display an error message if no data is found.
+
+**Program:**
+```sql
+DECLARE
+    CURSOR emp_cursor IS
+        SELECT emp_id, salary
+        FROM employees
+        WHERE dept_no = 10
+        FOR UPDATE;
+
+    v_emp_id employees.emp_id%TYPE;
+    v_salary employees.salary%TYPE;
+
+    row_count NUMBER := 0;
+
+    no_rows_found EXCEPTION;
+
+BEGIN
+    FOR emp_rec IN emp_cursor LOOP
+        UPDATE employees
+        SET salary = emp_rec.salary * 1.10
+        WHERE CURRENT OF emp_cursor;
+
+        DBMS_OUTPUT.PUT_LINE('Updated salary for emp_id: ' || emp_rec.emp_id);
+        row_count := row_count + 1;
+    END LOOP;
+
+    COMMIT;
+
+    IF row_count = 0 THEN
+        RAISE no_rows_found;
+    END IF;
+
+EXCEPTION
+    WHEN no_rows_found THEN
+        DBMS_OUTPUT.PUT_LINE('No employees found in the specified department.');
+
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Unexpected error occurred: ' || SQLERRM);
+END;
+```
+
+**Output:**
+
+![image](https://github.com/user-attachments/assets/25282bff-f0d6-4b4f-a04a-a0e94d91a2b3)
 
 ---
 
