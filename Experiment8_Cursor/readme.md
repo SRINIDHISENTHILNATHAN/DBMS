@@ -78,6 +78,56 @@ END;
 
 **Output:**  
 The program should display the employee details or an error message.
+```
+CREATE  TABLE employees (
+    emp_id      NUMBER PRIMARY KEY,
+    emp_name    VARCHAR2(100),
+    designation VARCHAR2(100)
+);
+
+INSERT INTO employees VALUES (1, 'Alice', 'Manager');
+INSERT INTO employees VALUES (2, 'Bob', 'Developer');
+INSERT INTO employees VALUES (3, 'Charlie', 'Analyst');
+
+
+DECLARE
+    CURSOR emp_cursor IS
+        SELECT emp_name, designation FROM employees;
+
+    v_name employees.emp_name%TYPE;
+    v_designation employees.designation%TYPE;
+
+    no_data EXCEPTION;
+    rows_count NUMBER := 0;
+
+BEGIN
+    OPEN emp_cursor;
+
+    LOOP
+        FETCH emp_cursor INTO v_name, v_designation;
+        EXIT WHEN emp_cursor%NOTFOUND;
+        
+        DBMS_OUTPUT.PUT_LINE('Name: ' || v_name || ', Designation: ' || v_designation);
+        rows_count := rows_count + 1;
+    END LOOP;
+
+    CLOSE emp_cursor;
+
+    IF rows_count = 0 THEN
+        RAISE no_data;
+    END IF;
+
+EXCEPTION
+    WHEN no_data THEN
+        DBMS_OUTPUT.PUT_LINE('No employee records found.');
+
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
+END;
+```
+**Output:**
+
+![image](https://github.com/user-attachments/assets/2779f339-f93b-424e-a043-8560b5f2b879)
 
 ---
 
