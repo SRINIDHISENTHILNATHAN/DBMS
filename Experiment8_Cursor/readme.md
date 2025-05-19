@@ -78,6 +78,7 @@ END;
 
 **Output:**  
 The program should display the employee details or an error message.
+**Program:**
 ```
 CREATE  TABLE employees (
     emp_id      NUMBER PRIMARY KEY,
@@ -147,6 +148,72 @@ END;
 
 **Output:**  
 The program should display the employee details within the specified salary range or an error message if no data is found.
+**Program:**
+```
+BEGIN
+    EXECUTE IMMEDIATE 'ALTER TABLE employees ADD (salary NUMBER)';
+EXCEPTION
+    WHEN OTHERS THEN
+        IF SQLCODE = -01430 THEN
+            NULL;
+        ELSE
+            RAISE;
+        END IF;
+END;
+
+BEGIN
+    UPDATE employees SET salary = 85000 WHERE emp_id = 1;
+    UPDATE employees SET salary = 60000 WHERE emp_id = 2;
+    UPDATE employees SET salary = 40000 WHERE emp_id = 3;
+    UPDATE employees SET salary = 30000 WHERE emp_id = 4;
+    COMMIT;
+END;
+/
+DECLARE
+    CURSOR emp_cursor(min_sal NUMBER, max_sal NUMBER) IS
+        SELECT emp_name, designation, salary
+        FROM employees
+        WHERE salary BETWEEN min_sal AND max_sal;
+
+    v_name      employees.emp_name%TYPE;
+    v_desig     employees.designation%TYPE;
+    v_salary    employees.salary%TYPE;
+
+    v_min_salary NUMBER := 50000;
+    v_max_salary NUMBER := 90000;
+
+    row_count NUMBER := 0;
+
+    no_employees_found EXCEPTION;
+
+BEGIN
+    OPEN emp_cursor(v_min_salary, v_max_salary);
+
+    LOOP
+        FETCH emp_cursor INTO v_name, v_desig, v_salary;
+        EXIT WHEN emp_cursor%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE('Name: ' || v_name || ', Designation: ' || v_desig || ', Salary: ' || v_salary);
+        row_count := row_count + 1;
+    END LOOP;
+
+    CLOSE emp_cursor;
+
+    IF row_count = 0 THEN
+        RAISE no_employees_found;
+    END IF;
+
+EXCEPTION
+    WHEN no_employees_found THEN
+        DBMS_OUTPUT.PUT_LINE('No employees found in the specified salary range.');
+
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
+END;
+```
+**Output:**
+
+![image](https://github.com/user-attachments/assets/16fa32b1-8d9e-4873-90d8-6400eb6ae7db)
 
 ---
 
