@@ -302,6 +302,48 @@ END;
 
 **Output:**  
 The program should display employee records or the appropriate error message if no data is found.
+**Program:**
+```
+DECLARE
+    CURSOR emp_cursor IS
+        SELECT * FROM employees;
+    emp_record employees%ROWTYPE;
+    row_count NUMBER := 0;
+
+    no_employees_found EXCEPTION;
+BEGIN
+    OPEN emp_cursor;
+
+    LOOP
+        FETCH emp_cursor INTO emp_record;
+        EXIT WHEN emp_cursor%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE(
+            'ID: ' || emp_record.emp_id || 
+            ', Name: ' || emp_record.emp_name || 
+            ', Designation: ' || emp_record.designation || 
+            ', Salary: ' || emp_record.salary
+        );
+
+        row_count := row_count + 1;
+    END LOOP;
+
+    CLOSE emp_cursor;
+    IF row_count = 0 THEN
+        RAISE no_employees_found;
+    END IF;
+
+EXCEPTION
+    WHEN no_employees_found THEN
+        DBMS_OUTPUT.PUT_LINE('No employee records found in the database.');
+
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
+END;
+```
+**Output:**
+
+![image](https://github.com/user-attachments/assets/3bcc7f11-85c1-4628-b68f-4d69d1a1429e)
 
 ---
 
