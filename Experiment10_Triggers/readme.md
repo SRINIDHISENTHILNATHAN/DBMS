@@ -161,7 +161,35 @@ END;
 **Expected Output:**
 - The `audit_log` table will maintain a count of how many updates have been made to the `customer_orders` table.
 
+**Program:**
+```sql
+INSERT INTO audit_log (table_name, update_count)
+VALUES ('CUSTOMER_ORDERS', 0);
+CREATE OR REPLACE TRIGGER trg_count_updates_customer_orders
+AFTER UPDATE ON customer_orders
+BEGIN
+    UPDATE audit_log
+    SET update_count = update_count + 1
+    WHERE table_name = 'CUSTOMER_ORDERS';
+END;
+/
+-- Update a row in customer_orders
+UPDATE customer_orders
+SET total_amount = total_amount + 10
+WHERE order_id = 1;
+
+-- Check the update count
+SELECT * FROM audit_log;
+```  
+
+  
+  
+**Output:**
+
+![image](https://github.com/user-attachments/assets/86838b33-9a48-41c0-9290-317c08c95fb8)
+
 ---
+
 
 ## 5. Write a trigger that checks a condition before allowing insertion into a table.
 **Steps:**
@@ -170,6 +198,33 @@ END;
 
 **Expected Output:**
 - If the inserted salary in the `employees` table is below the condition (e.g., salary < 3000), the insert operation is blocked, and an error message is raised, such as: `ERROR: Salary below minimum threshold.`
+
+```sql
+CREATE TABLE employees (
+    emp_id     NUMBER PRIMARY KEY,
+    emp_name   VARCHAR2(100),
+    salary     NUMBER
+);
+CREATE OR REPLACE TRIGGER trg_check_min_salary
+BEFORE INSERT ON employees
+FOR EACH ROW
+BEGIN
+    IF :NEW.salary < 3000 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'ERROR: Salary below minimum threshold.');
+    END IF;
+END;
+/
+INSERT INTO employees (emp_id, emp_name, salary)
+VALUES (1, 'John Doe', 2500);
+
+INSERT INTO employees (emp_id, emp_name, salary)
+VALUES (2, 'Jane Smith', 4000);
+
+```
+**Output:**
+
+![image](https://github.com/user-attachments/assets/2a106a98-456b-4915-bde7-f94d7de0f750)
+
 
 ## RESULT
 Thus, the PL/SQL trigger programs were written and executed successfully.
